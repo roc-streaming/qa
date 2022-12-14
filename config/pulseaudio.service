@@ -1,0 +1,13 @@
+[Unit]
+Description=PulseAudio Sound System
+Before=sound.target
+
+[Service]
+ExecStart=/usr/bin/pulseaudio -vvv --log-target=stderr --daemonize=no --realtime --no-cpu-limit --disallow-exit
+Restart=always
+RestartSec=1s
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
