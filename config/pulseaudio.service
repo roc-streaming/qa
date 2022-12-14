@@ -1,0 +1,13 @@
+[Unit]
+Description=PulseAudio Sound System
+Before=sound.target
+
+[Service]
+User=1000
+BusName=org.pulseaudio.Server
+ExecStart=/usr/bin/pulseaudio
+Restart=always
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target
