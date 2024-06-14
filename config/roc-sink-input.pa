@@ -1,4 +1,4 @@
 #roc:begin
-load-module module-roc-sink-input local_source_port=10001 local_repair_port=10002 local_control_port=10003 sess_latency_msec=200
+load-module module-roc-sink-input local_source_port=10001 local_repair_port=10002 local_control_port=10003 target_latency_msec=300
 move-sink-input 0 0
 #roc:end

@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target systemd-networkd-wait-online.service
 
 [Service]
-ExecStart=/usr/bin/roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 --sess-latency 200ms
+ExecStart=/usr/bin/roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 --target-latency 300ms
 Restart=on-failure
 RestartSec=1s
 

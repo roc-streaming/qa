@@ -12,6 +12,7 @@ default:
 
 pkgs:
   0.3.0:
+  0.4.0:
     vars:
       - ROC_COMMIT=develop
 
@@ -27,13 +28,13 @@ envs:
   macbook-pro_x86-64:
     vars:
       - ROC_OS=macos
-      - ROC_TOOLCHAIN=x86_64-apple-macos12.6-darwin21.6.0
+      - ROC_TOOLCHAIN=x86_64-apple-macos14.4-darwin23.4.0
       - ROC_DEPLOY_TYPE=none
 
   macbook-air_m1:
     vars:
       - ROC_OS=macos
-      - ROC_TOOLCHAIN=arm64-apple-macos11.6-darwin20.6.0
+      - ROC_TOOLCHAIN=arm64-apple-macos13.6-darwin22.6.0
       - ROC_DEPLOY_TYPE=none
 
   orangepi-lite2:
@@ -43,7 +44,7 @@ envs:
       - ROC_PULSE_VERSION=8.0
       - ROC_DEPLOY_TYPE=pulseaudio_receiver
 
-  raspberrypi-4b_ubuntu22:
+  raspberrypi-4b-ubuntu:
     vars:
       - ROC_OS=linux
       - ROC_TOOLCHAIN=aarch64-linux-gnu
@@ -68,3 +69,17 @@ envs:
       - ROC_TOOLCHAIN=arm-bcm2708hardfp-linux-gnueabi
       - ROC_LIB_DIR=arm-linux-gnueabihf
       - ROC_DEPLOY_TYPE=alsa_receiver
+
+  som-9331:
+    vars:
+      - ROC_OS=linux
+      - ROC_TOOLCHAIN=mips-openwrt-linux-musl
+      - ROC_TOOLCHAIN_IMAGE=mips-openwrt-linux-atheros:17.01
+      - ROC_DEPLOY_TYPE=none
+      - ROC_SCONS_OPTIONS="--disable-libunwind --disable-sox"
+    setup:
+      - ${QMG_DIR}/scripts/som_setup.sh
+    deploy:
+      - ${QMG_DIR}/scripts/som_deploy.sh
+    run:
+      - ${QMG_DIR}/scripts/som_run.sh
