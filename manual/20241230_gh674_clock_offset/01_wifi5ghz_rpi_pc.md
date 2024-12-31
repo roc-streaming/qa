@@ -1,12 +1,12 @@
 # Table of Contents
 
-1.  [Test summary](#orgbb328b0)
-2.  [Setup code](#org5058fd0)
-3.  [Round Trip Time](#org0b95d6e)
-4.  [Clock Offset](#org92d3873)
+1.  [Test summary](#org0eea890)
+2.  [Setup code](#orgd923691)
+3.  [Round Trip Time](#org11fef2e)
+4.  [Clock Offset](#orge5e5f49)
 
 
-<a id="orgbb328b0"></a>
+<a id="org0eea890"></a>
 
 # Test summary
 
@@ -14,14 +14,20 @@
 ## Environment
 
 -   **Devices**
-    -   Sender: RPi4 (`arm32`)
+    -   Sender: RPi4B (`arm32`)
     -   Receiver: PC (`x86_64`)
 
 -   **Network**
     -   Wi-Fi 5GHz
 
+-   **Audio**
+    -   input and output are WAV files
+
 -   **Ping**
     -   below 3ms
+
+-   **Scheduling**
+    -   `SCHED_RR` disabled
 
 
 ## Info
@@ -103,7 +109,7 @@
     ```
 
 
-<a id="org5058fd0"></a>
+<a id="orgd923691"></a>
 
 # Setup code
 
@@ -206,7 +212,7 @@ data = load_csv('01_wifi5ghz_rpi_pc.csv')
     # Out[78]:
 
 
-<a id="org0b95d6e"></a>
+<a id="org11fef2e"></a>
 
 # Round Trip Time
 
@@ -256,7 +262,7 @@ RTT jitter:
 ```
 
 
-<a id="org92d3873"></a>
+<a id="orge5e5f49"></a>
 
 # Clock Offset
 

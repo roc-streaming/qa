@@ -6,17 +6,23 @@
 ** Environment
 
 - *Devices*
-  - Sender: RPi4 (=arm32=)
+  - Sender: RPi4B (=arm32=)
   - Receiver: PC (=x86_64=)
 
 - *Network*
-  - RPi connected to Wi-Fi 2.4GHz AC
-  - PC connected to Wi-Fi 5GHz AC
-  - Two ACs connected via Ethernet cable
+  - RPi connected to Wi-Fi 2.4GHz AP
+  - PC connected to Wi-Fi 5GHz AP
+  - Two APs connected via Ethernet cable
+
+- *Audio*
+  - input and output are WAV files
 
 - *Ping*
   - below 10ms with regular spikes up to 90ms and notable jitter
-  
+
+- *Scheduling*
+  - =SCHED_RR= disabled
+
 ** Info
 
 - *Git revisions*

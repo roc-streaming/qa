@@ -1,12 +1,12 @@
 # Table of Contents
 
-1.  [Test summary](#orgb2f0d8b)
-2.  [Setup code](#org1deb18d)
-3.  [Round Trip Time](#org669b086)
-4.  [Clock Offset](#orga91c699)
+1.  [Test summary](#org298eced)
+2.  [Setup code](#orgd233bb2)
+3.  [Round Trip Time](#orgd5c2f38)
+4.  [Clock Offset](#org9ebafa0)
 
 
-<a id="orgb2f0d8b"></a>
+<a id="org298eced"></a>
 
 # Test summary
 
@@ -14,14 +14,20 @@
 ## Environment
 
 -   **Devices**
-    -   Sender: RPi4 (`arm32`)
+    -   Sender: RPi4B (`arm32`)
     -   Receiver: PC (`x86_64`)
 
 -   **Network**
     -   Ethernet (direct connection)
 
+-   **Audio**
+    -   input and output are WAV files
+
 -   **Ping**
     -   below 0.3ms
+
+-   **Scheduling**
+    -   `SCHED_RR` disabled
 
 
 ## Info
@@ -96,7 +102,7 @@
     ```
 
 
-<a id="org1deb18d"></a>
+<a id="orgd233bb2"></a>
 
 # Setup code
 
@@ -200,7 +206,7 @@ data = data[1:,]
     # Out[84]:
 
 
-<a id="org669b086"></a>
+<a id="orgd5c2f38"></a>
 
 # Round Trip Time
 
@@ -250,7 +256,7 @@ RTT jitter:
 ```
 
 
-<a id="orga91c699"></a>
+<a id="org9ebafa0"></a>
 
 # Clock Offset
 

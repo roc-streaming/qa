@@ -6,15 +6,21 @@
 ** Environment
 
 - *Devices*
-  - Sender: RPi4 (=arm32=)
+  - Sender: RPi4B (=arm32=)
   - Receiver: PC (=x86_64=)
 
 - *Network*
   - Wi-Fi 5GHz
 
+- *Audio*
+  - input and output are WAV files
+
 - *Ping*
   - below 3ms
-  
+
+- *Scheduling*
+  - =SCHED_RR= disabled
+
 ** Info
 
 - *Git revisions*
