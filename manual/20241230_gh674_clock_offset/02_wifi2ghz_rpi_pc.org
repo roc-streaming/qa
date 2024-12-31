@@ -1,0 +1,210 @@
+#+OPTIONS: toc:nil
+#+TOC: headlines 1
+
+* SECTION Test summary
+
+** Environment
+
+- *Devices*
+  - Sender: RPi4 (=arm32=)
+  - Receiver: PC (=x86_64=)
+
+- *Network*
+  - RPi connected to Wi-Fi 2.4GHz AC
+  - PC connected to Wi-Fi 5GHz AC
+  - Two ACs connected via Ethernet cable
+
+- *Ping*
+  - below 10ms with regular spikes up to 90ms and notable jitter
+  
+** Info
+
+- *Git revisions*
+
+   #+begin_src shell :results verbatim
+     cd ~/dev/roc-streaming/roc-toolkit && git log -1 --format=short
+   #+end_src
+
+   #+results:
+   : commit 5e8528929835d8c8844ce3fd020047373488e6ab
+   : Author: Mikhail Baranov <baranov.mv@gmail.com>
+   : 
+   :     Slot provides Control endpoints ts
+
+   #+begin_src shell :results verbatim
+     cd ~/dev/roc-streaming/csvplotter && git log -1 --format=short
+   #+end_src
+
+   #+results:
+   : commit 1ef0a47962b9071c2cc76175c59179ddf7895d12
+   : Author: Mikhail Baranov <baranov.mv@gmail.com>
+   : 
+   :     plot t1-t4 stats
+
+- *Estimate clock offset*
+
+   Rough difference between unix time on two machines.
+
+   #+begin_src shell :results verbatim
+     ssh raspberrypi-4b.lan "date -u +%s" | awk -v local="$(date -u +%s)" '{print local - $1}'
+   #+end_src
+
+   #+results:
+   : 11799153
+
+- *Estimate ping*
+
+   #+begin_src shell :results verbatim
+     ping -q -i 0.002 -c 1000 raspberrypi-4b.lan
+   #+end_src
+
+   #+results:
+   : PING raspberrypi-4b.lan (192.168.0.141) 56(84) bytes of data.
+   : 
+   : --- raspberrypi-4b.lan ping statistics ---
+   : 1000 packets transmitted, 984 received, 1.6% packet loss, time 3355ms
+   : rtt min/avg/max/mdev = 1.353/5.328/158.987/13.725 ms, pipe 16
+
+** Running
+
+- *stop ntpd*
+
+   #+begin_example
+   sudo systemctl stop ntp
+   #+end_example
+
+- *run roc-send*
+
+   #+begin_example
+   ./roc-send -vv -s rtp+rs8m://dell-xps15.lan:10001 -r rs8m://dell-xps15.lan:10002 -c rtcp://dell-xps15.lan:10003 -i file:long.wav
+   #+end_example
+
+- *run roc-recv*
+
+   #+begin_example
+   ./roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 -o file:test.wav --dump test.csv --min-latency 200ms --max-latency 1s --no-play-timeout 1s
+   #+end_example
+
+- *run csvplotter*
+
+   #+begin_example
+   python3 ./csvplotter.py test.csv
+   #+end_example
+
+
+* SECTION Setup code
+
+#+transclude: [[file:setup.org]]
+
+#+begin_src ipython :session
+  data = load_csv('02_wifi2ghz_rpi_pc.csv')
+#+end_src
+
+#+results:
+: # Out[91]:
+
+
+* SECTION Round Trip Time
+
+** Overall
+
+#+begin_src ipython :session :results raw drawer
+  plt.plot(data[:,0]/60, data[:,1]*1000)
+  plt.legend(['rtt, ms'], labelcolor='linecolor')
+  configure_plot()
+#+end_src
+
+#+results:
+:results:
+# Out[92]:
+[[file:./obipy-resources/3XFdH2.png]]
+:end:
+
+** Zoomed
+
+#+begin_src ipython :session :results raw drawer
+  plt.plot(data[1300:1600,0]/60, data[1300:1600,1]*1000)
+  plt.legend(['rtt, ms'], labelcolor='linecolor')
+  configure_plot()
+#+end_src
+
+#+results:
+:results:
+# Out[98]:
+[[file:./obipy-resources/2ErfXA.png]]
+:end:
+
+** Statistics
+
+#+begin_src ipython :session :results output verbatim
+  print_stats("RTT", data[:,1])
+  print_jitter("RTT", data[:,1])
+#+end_src
+
+#+results:
+#+begin_example
+RTT statistics:
+  min:  2.346 ms
+  max:  42.096 ms
+  avg:  5.724 ms
+  p95:  13.945 ms
+  
+RTT jitter:
+  min:  0.000 ms
+  max:  25.775 ms
+  avg:  0.804 ms
+  p95:  3.204 ms
+  
+#+end_example
+
+
+* SECTION Clock Offset
+
+** Overall
+
+#+begin_src ipython :session :results raw drawer
+  plt.plot(data[:,0]/60, data[:,2], 'C5')
+  plt.legend(['clock_offset, sec'], labelcolor='linecolor')
+  configure_plot()
+#+end_src
+
+#+results:
+:results:
+# Out[100]:
+[[file:./obipy-resources/SUvIoL.png]]
+:end:
+
+** Zoomed
+
+#+begin_src ipython :session :results raw drawer
+  plt.plot(data[1300:1600,0]/60, data[1300:1600,2]*1000, 'C5')
+  plt.legend(['clock_offset, ms'], labelcolor='linecolor')
+  configure_plot()
+#+end_src
+
+#+results:
+:results:
+# Out[101]:
+[[file:./obipy-resources/h9Ovfg.png]]
+:end:
+
+** Statistics
+
+#+begin_src ipython :session :results output verbatim
+  print_drift("Clock offset", data[:,0], data[:,2])
+  print_jitter("Clock offset", data[:,2])
+#+end_src
+
+#+results:
+#+begin_example
+Clock offset drift:
+  0.000013 sec/sec
+  1.141 sec/day
+  
+Clock offset jitter:
+  min:  0.000 ms
+  max:  0.843 ms
+  avg:  0.020 ms
+  p95:  0.060 ms
+  
+#+end_example
