@@ -105,117 +105,106 @@
 
 * SECTION Setup code
 
-#+transclude: [[file:setup.org]]
+#+begin_export html
+<details>
+  <summary>Click to expand</summary>
+#+end_export
 
-#+begin_src ipython :session
+#+transclude: [[file:setup.py]] :src jupyter-python :rest ":session report01 :results none"
+
+#+begin_export html
+</details>
+#+end_export
+
+#+begin_src jupyter-python :session report01 :results none
   data = load_csv('01_wifi5ghz_rpi_pc.csv')
 #+end_src
-
-#+results:
-: # Out[78]:
 
 
 * SECTION Round Trip Time
 
 ** Overall
 
-#+begin_src ipython :session :results raw drawer
+#+begin_src jupyter-python :session report01
   plt.plot(data[:,0]/60, data[:,1]*1000)
   plt.legend(['rtt, ms'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-:results:
-# Out[58]:
-[[file:./obipy-resources/2La0G7.png]]
-:end:
+[[file:./.ob-jupyter/02b0d5146ba68572f62bcf106806f2b1dc8ff940.png]]
 
 ** Zoomed
 
-#+begin_src ipython :session :results raw drawer
+#+begin_src jupyter-python :session report01
   plt.plot(data[550:600,0]/60, data[550:600,1]*1000)
   plt.legend(['rtt, ms'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-:results:
-# Out[46]:
-[[file:./obipy-resources/dTx736.png]]
-:end:
+[[file:./.ob-jupyter/fae7464ae649fa1e50eece51442c620c01491a9a.png]]
 
 ** Statistics
 
-#+begin_src ipython :session :results output verbatim
-  print_stats("RTT", data[:,1])
-  print_jitter("RTT", data[:,1])
+#+begin_src jupyter-python :session report01
+  format_tables(stats_table('rtt', data[:,1]),
+                jitter_table('rtt_jitter', data[:,1]))
 #+end_src
 
 #+results:
-#+begin_example
-RTT statistics:
-  min:  1.957 ms
-  max:  4.449 ms
-  avg:  2.509 ms
-  p95:  2.994 ms
-  
-RTT jitter:
-  min:  0.000 ms
-  max:  2.028 ms
-  avg:  0.068 ms
-  p95:  0.269 ms
-  
-#+end_example
+|       | *=rtt=*  | *=rtt_jitter=* |
+|-------+----------+----------------|
+| *min* | 1.957 ms | 0.000 ms       |
+| *max* | 4.449 ms | 2.028 ms       |
+| *avg* | 2.509 ms | 0.068 ms       |
+| *p95* | 2.994 ms | 0.269 ms       |
 
 
 * SECTION Clock Offset
 
 ** Overall
 
-#+begin_src ipython :session :results raw drawer
+#+begin_src jupyter-python :session report01
   plt.plot(data[:,0]/60, data[:,2], 'C5')
   plt.legend(['clock_offset, sec'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-:results:
-# Out[48]:
-[[file:./obipy-resources/eqCn0S.png]]
-:end:
+[[file:./.ob-jupyter/cdd297ecec878d628b67a8ae7820aa1a2c3d1f9a.png]]
 
 ** Zoomed
 
-#+begin_src ipython :session :results raw drawer
+#+begin_src jupyter-python :session report01
   plt.plot(data[550:600,0]/60, data[550:600,2]*1000, 'C5')
-  plt.legend(['clock_offset, ms'], labelcolor='linecolor')
+  plt.legend(['clock_offset, sec'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-:results:
-# Out[53]:
-[[file:./obipy-resources/fJry6b.png]]
-:end:
+[[file:./.ob-jupyter/944b3f0faa5f6a91ebf3286850657b96254637e2.png]]
 
 ** Statistics
 
-#+begin_src ipython :session :results output verbatim
-  print_drift("Clock offset", data[:,0], data[:,2])
-  print_jitter("Clock offset", data[:,2])
+#+begin_src jupyter-python :session report01
+  format_tables(jitter_table('clock_offset_jitter', data[:,2]))
 #+end_src
 
 #+results:
-#+begin_example
-Clock offset drift:
-  0.000016 sec/sec
-  1.418 sec/day
-  
-Clock offset jitter:
-  min:  0.000 ms
-  max:  0.376 ms
-  avg:  0.005 ms
-  p95:  0.017 ms
-  
-#+end_example
+|       | *=clock_offset_jitter=* |
+|-------+-------------------------|
+| *min* | 0.000 ms                |
+| *max* | 0.376 ms                |
+| *avg* | 0.005 ms                |
+| *p95* | 0.017 ms                |
+
+#+begin_src jupyter-python :session report01
+  format_tables(drift_table('clock_offset_drift', data[:,0], data[:,2]))
+#+end_src
+
+#+results:
+|           | *=clock_offset_drift=* |
+|-----------+------------------------|
+| *sec/sec* |               0.000016 |
+| *sec/day* |                  1.418 |

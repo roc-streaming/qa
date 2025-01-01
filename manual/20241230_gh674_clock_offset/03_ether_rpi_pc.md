@@ -1,12 +1,12 @@
 # Table of Contents
 
-1.  [Test summary](#org298eced)
-2.  [Setup code](#orgd233bb2)
-3.  [Round Trip Time](#orgd5c2f38)
-4.  [Clock Offset](#org9ebafa0)
+1.  [Test summary](#orga9baf92)
+2.  [Setup code](#org00e61a6)
+3.  [Round Trip Time](#org8a61ced)
+4.  [Clock Offset](#orgd4f01ea)
 
 
-<a id="org298eced"></a>
+<a id="orga9baf92"></a>
 
 # Test summary
 
@@ -102,7 +102,7 @@
     ```
 
 
-<a id="orgd233bb2"></a>
+<a id="org00e61a6"></a>
 
 # Setup code
 
@@ -114,6 +114,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
+import pandas as pd
 import os
 import subprocess
 
@@ -151,49 +152,34 @@ def configure_plot():
   ax.get_yaxis().set_major_formatter(ticker.FuncFormatter(
     lambda x, pos: "{:,.3f}".format(x).replace(",", "'")))
 
-def print_stats(name, values):
+def stats_table(name, values):
   values = values * 1000
-  print("""
-{} statistics:
-  min:  {:.3f} ms
-  max:  {:.3f} ms
-  avg:  {:.3f} ms
-  p95:  {:.3f} ms
-  """.format(
-    name,
-    np.min(values),
-    np.max(values),
-    np.mean(values),
-    np.percentile(values, 95)).lstrip())
+  return pd.DataFrame({
+    '': [f'*={name}=*'],
+    '*min*': ['{:.3f} ms'.format(np.min(values))],
+    '*max*': ['{:.3f} ms'.format(np.max(values))],
+    '*avg*': ['{:.3f} ms'.format(np.mean(values))],
+    '*p95*': ['{:.3f} ms'.format(np.percentile(values, 95))],
+  })
 
-def print_jitter(name, values):
-  values = values * 1000
-  jitter = np.abs(np.diff(np.diff(values)))
-  print("""
-{} jitter:
-  min:  {:.3f} ms
-  max:  {:.3f} ms
-  avg:  {:.3f} ms
-  p95:  {:.3f} ms
-  """.format(
-    name,
-    np.min(jitter),
-    np.max(jitter),
-    np.mean(jitter),
-    np.percentile(jitter, 95)).lstrip())
+def jitter_table(name, values):
+  values_jitter = np.abs(np.diff(np.diff(values)))
+  return stats_table(name, values_jitter)
 
-def print_drift(name, tstamps, values):
+def drift_table(name, tstamps, values):
   tstamp_delta = tstamps[-1] - tstamps[0]
   values_delta = values[-1] - values[0]
   values_drift = values_delta / tstamp_delta
-  print("""
-{} drift:
-  {:.6f} sec/sec
-  {:.3f} sec/day
-  """.format(
-    name,
-    values_drift,
-    values_drift * 60 * 60 * 24).lstrip())
+  return pd.DataFrame({
+    '': [f'*={name}=*'],
+    '*sec/sec*': '{:.6f}'.format(values_drift),
+    '*sec/day*': '{:.3f}'.format(values_drift*60*60*24),
+  })
+
+def format_tables(*tables):
+  res = pd.concat(tables).T.reset_index()
+  tbl = res.values.tolist()
+  return [tbl[0]] + [None] + tbl[1:]
 ```
 
 </details>
@@ -203,10 +189,8 @@ data = load_csv('03_ether_rpi_pc.csv')
 data = data[1:,]
 ```
 
-    # Out[84]:
 
-
-<a id="orgd5c2f38"></a>
+<a id="org8a61ced"></a>
 
 # Round Trip Time
 
@@ -219,7 +203,7 @@ plt.legend(['rtt, ms'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/ItF268.gif"/>
+<img width="700px" src="images/e6b25f42610877625a6981b4dabf2dababd24c9f.gif"/>
 
 
 ## Zoomed
@@ -230,33 +214,25 @@ plt.legend(['rtt, ms'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/g4CACo.gif"/>
+<img width="700px" src="images/5945650b6c7d205fb0295bb277d9944e1f61df50.gif"/>
 
 
 ## Statistics
 
 ```python
-print_stats("RTT", data[:,1])
-print_jitter("RTT", data[:,1])
+format_tables(stats_table('rtt', data[:,1]),
+              jitter_table('rtt_jitter', data[:,1]))
 ```
 
-```
-RTT statistics:
-  min:  0.356 ms
-  max:  0.529 ms
-  avg:  0.462 ms
-  p95:  0.508 ms
-  
-RTT jitter:
-  min:  0.000 ms
-  max:  0.169 ms
-  avg:  0.010 ms
-  p95:  0.037 ms
-  
-```
+|         | **`rtt`** | **`rtt_jitter`** |
+|------- |--------- |---------------- |
+| **min** | 0.356 ms  | 0.000 ms         |
+| **max** | 0.529 ms  | 0.169 ms         |
+| **avg** | 0.462 ms  | 0.010 ms         |
+| **p95** | 0.508 ms  | 0.037 ms         |
 
 
-<a id="org9ebafa0"></a>
+<a id="orgd4f01ea"></a>
 
 # Clock Offset
 
@@ -269,36 +245,38 @@ plt.legend(['clock_offset, sec'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/Vl6xxc.gif"/>
+<img width="700px" src="images/8558d97a5e85d75ef8de7a646449764af2cc0531.gif"/>
 
 
 ## Zoomed
 
 ```python
 plt.plot(data[550:600,0]/60, data[550:600,2]*1000, 'C5')
-plt.legend(['clock_offset, ms'], labelcolor='linecolor')
+plt.legend(['clock_offset, sec'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/PQH2wP.gif"/>
+<img width="700px" src="images/6cad361c1467cff15eaf6de9e761718f2677620f.gif"/>
 
 
 ## Statistics
 
 ```python
-print_drift("Clock offset", data[:,0], data[:,2])
-print_jitter("Clock offset", data[:,2])
+format_tables(jitter_table('clock_offset_jitter', data[:,2]))
 ```
 
+|         | **`clock_offset_jitter`** |
+|------- |------------------------- |
+| **min** | 0.000 ms                  |
+| **max** | 0.038 ms                  |
+| **avg** | 0.003 ms                  |
+| **p95** | 0.010 ms                  |
+
+```python
+format_tables(drift_table('clock_offset_drift', data[:,0], data[:,2]))
 ```
-Clock offset drift:
-  0.000016 sec/sec
-  1.378 sec/day
-  
-Clock offset jitter:
-  min:  0.000 ms
-  max:  0.038 ms
-  avg:  0.003 ms
-  p95:  0.010 ms
-  
-```
+
+|             | **`clock_offset_drift`** |
+|----------- |------------------------ |
+| **sec/sec** | 0.000016                 |
+| **sec/day** | 1.378                    |
