@@ -1,12 +1,13 @@
+# `02--bad_wifi--no_load`
+
+
 # Table of Contents
 
-1.  [Test summary](#orga9baf92)
-2.  [Setup code](#org00e61a6)
-3.  [Round Trip Time](#org8a61ced)
-4.  [Clock Offset](#orgd4f01ea)
+1.  [Test summary](#orgc77ab7f)
+2.  [Setup code](#org47d8a28)
+3.  [Round Trip Time](#org4219d99)
+4.  [Clock Offset](#org6ada2dc)
 
-
-<a id="orga9baf92"></a>
 
 # Test summary
 
@@ -18,13 +19,15 @@
     -   Receiver: PC (`x86_64`)
 
 -   **Network**
-    -   Ethernet (direct connection)
+    -   RPi connected to Wi-Fi 2.4GHz AP
+    -   PC connected to Wi-Fi 5GHz AP
+    -   Two APs connected via Ethernet cable
 
 -   **Audio**
     -   input and output are WAV files
 
 -   **Ping**
-    -   below 0.3ms
+    -   below 10ms with regular spikes up to 90ms and notable jitter
 
 -   **Scheduling**
     -   `SCHED_RR` disabled
@@ -34,7 +37,7 @@
 
 -   **Git revisions**
     
-    ```
+    ```shell
     cd ~/dev/roc-streaming/roc-toolkit && git log -1 --format=short
     ```
     
@@ -43,7 +46,7 @@
         
             Slot provides Control endpoints ts
     
-    ```
+    ```shell
     cd ~/dev/roc-streaming/csvplotter && git log -1 --format=short
     ```
     
@@ -56,23 +59,23 @@
     
     Rough difference between unix time on two machines.
     
-    ```
-    ssh raspberrypi-4b.eth "date -u +%s" | awk -v local="$(date -u +%s)" '{print local - $1}'
+    ```shell
+    ssh raspberrypi-4b.lan "date -u +%s" | awk -v local="$(date -u +%s)" '{print local - $1}'
     ```
     
-        11798932
+        11799153
 
 -   **Estimate ping**
     
-    ```
-    ping -q -i 0.002 -c 1000 raspberrypi-4b.eth
+    ```shell
+    ping -q -i 0.002 -c 1000 raspberrypi-4b.lan
     ```
     
-        PING raspberrypi-4b.eth (192.168.2.131) 56(84) bytes of data.
+        PING raspberrypi-4b.lan (192.168.0.141) 56(84) bytes of data.
         
-        --- raspberrypi-4b.eth ping statistics ---
-        1000 packets transmitted, 1000 received, 0% packet loss, time 1996ms
-        rtt min/avg/max/mdev = 0.119/0.149/0.250/0.025 ms
+        --- raspberrypi-4b.lan ping statistics ---
+        1000 packets transmitted, 984 received, 1.6% packet loss, time 3355ms
+        rtt min/avg/max/mdev = 1.353/5.328/158.987/13.725 ms, pipe 16
 
 
 ## Running
@@ -86,13 +89,13 @@
 -   **run roc-send**
     
     ```
-    ./roc-send -vv -s rtp+rs8m://dell-xps15.eth:10001 -r rs8m://dell-xps15.eth:10002 -c rtcp://dell-xps15.eth:10003 -i file:long.wav
+    ./roc-send -vv -s rtp+rs8m://dell-xps15.lan:10001 -r rs8m://dell-xps15.lan:10002 -c rtcp://dell-xps15.lan:10003 -i file:long.wav
     ```
 
 -   **run roc-recv**
     
     ```
-    ./roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 -o file:test.wav --dump test.csv
+    ./roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 -o file:test.wav --dump test.csv --min-latency 200ms --max-latency 1s --no-play-timeout 1s
     ```
 
 -   **run csvplotter**
@@ -101,8 +104,6 @@
     python3 ./csvplotter.py test.csv
     ```
 
-
-<a id="org00e61a6"></a>
 
 # Setup code
 
@@ -119,7 +120,7 @@ import os
 import subprocess
 
 plt.rcParams['figure.figsize'] = [20, 10]
-plt.rcParams['figure.dpi'] = 100
+plt.rcParams['figure.dpi'] = 75
 plt.rcParams.update({'font.size': 24})
 plt.style.use(['dark_background'])
 
@@ -185,12 +186,9 @@ def format_tables(*tables):
 </details>
 
 ```python
-data = load_csv('03_ether_rpi_pc.csv')
-data = data[1:,]
+data = load_csv('02--bad_wifi--no_load.csv')
 ```
 
-
-<a id="org8a61ced"></a>
 
 # Round Trip Time
 
@@ -203,18 +201,18 @@ plt.legend(['rtt, ms'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/e6b25f42610877625a6981b4dabf2dababd24c9f.gif"/>
+<img width="700px" src="images/9ae1c2282644952a3e1d5c39e72516df0e1dbf97.gif"/>
 
 
 ## Zoomed
 
 ```python
-plt.plot(data[550:600,0]/60, data[550:600,1]*1000)
+plt.plot(data[1300:1600,0]/60, data[1300:1600,1]*1000)
 plt.legend(['rtt, ms'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/5945650b6c7d205fb0295bb277d9944e1f61df50.gif"/>
+<img width="700px" src="images/d3c6f44e38a44da85d3e86eebf95e61f24700356.gif"/>
 
 
 ## Statistics
@@ -226,13 +224,11 @@ format_tables(stats_table('rtt', data[:,1]),
 
 |         | **`rtt`** | **`rtt_jitter`** |
 |------- |--------- |---------------- |
-| **min** | 0.356 ms  | 0.000 ms         |
-| **max** | 0.529 ms  | 0.169 ms         |
-| **avg** | 0.462 ms  | 0.010 ms         |
-| **p95** | 0.508 ms  | 0.037 ms         |
+| **min** | 2.346 ms  | 0.000 ms         |
+| **max** | 42.096 ms | 25.775 ms        |
+| **avg** | 5.724 ms  | 0.804 ms         |
+| **p95** | 13.945 ms | 3.204 ms         |
 
-
-<a id="orgd4f01ea"></a>
 
 # Clock Offset
 
@@ -245,18 +241,18 @@ plt.legend(['clock_offset, sec'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/8558d97a5e85d75ef8de7a646449764af2cc0531.gif"/>
+<img width="700px" src="images/681150b3b207ced35be5989eaab30e1b8e18fa30.gif"/>
 
 
 ## Zoomed
 
 ```python
-plt.plot(data[550:600,0]/60, data[550:600,2]*1000, 'C5')
+plt.plot(data[1300:1600,0]/60, data[1300:1600,2]*1000, 'C5')
 plt.legend(['clock_offset, sec'], labelcolor='linecolor')
 configure_plot()
 ```
 
-<img width="700px" src="images/6cad361c1467cff15eaf6de9e761718f2677620f.gif"/>
+<img width="700px" src="images/e6bd3b8e84fbf81d97e5c1c9a8de2f8e15618b94.gif"/>
 
 
 ## Statistics
@@ -268,9 +264,9 @@ format_tables(jitter_table('clock_offset_jitter', data[:,2]))
 |         | **`clock_offset_jitter`** |
 |------- |------------------------- |
 | **min** | 0.000 ms                  |
-| **max** | 0.038 ms                  |
-| **avg** | 0.003 ms                  |
-| **p95** | 0.010 ms                  |
+| **max** | 0.843 ms                  |
+| **avg** | 0.020 ms                  |
+| **p95** | 0.060 ms                  |
 
 ```python
 format_tables(drift_table('clock_offset_drift', data[:,0], data[:,2]))
@@ -278,5 +274,5 @@ format_tables(drift_table('clock_offset_drift', data[:,0], data[:,2]))
 
 |             | **`clock_offset_drift`** |
 |----------- |------------------------ |
-| **sec/sec** | 0.000016                 |
-| **sec/day** | 1.378                    |
+| **sec/sec** | 0.000013                 |
+| **sec/day** | 1.141                    |

@@ -7,7 +7,7 @@ import os
 import subprocess
 
 plt.rcParams['figure.figsize'] = [20, 10]
-plt.rcParams['figure.dpi'] = 100
+plt.rcParams['figure.dpi'] = 75
 plt.rcParams.update({'font.size': 24})
 plt.style.use(['dark_background'])
 

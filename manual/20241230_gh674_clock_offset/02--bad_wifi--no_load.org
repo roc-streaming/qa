@@ -1,5 +1,12 @@
+# -*- org-image-actual-width: 1000; -*-
 #+OPTIONS: toc:nil
-#+TOC: headlines 1
+
+* HEADING =02--bad_wifi--no_load=
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
+  #+TOC: headlines 1
+
 
 * SECTION Test summary
 
@@ -112,7 +119,7 @@
 #+end_export
 
 #+begin_src jupyter-python :session report02 :results none
-  data = load_csv('02_wifi2ghz_rpi_pc.csv')
+  data = load_csv('02--bad_wifi--no_load.csv')
 #+end_src
 
 
@@ -127,7 +134,7 @@
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/7b5fe38f7ab648c5e12ce480f7cc348ef089534f.png]]
+[[file:./.ob-jupyter/9ae1c2282644952a3e1d5c39e72516df0e1dbf97.png]]
 
 ** Zoomed
 
@@ -138,7 +145,7 @@
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/d8c50b60fb7eba7357c44ebbb2a257191b203d7f.png]]
+[[file:./.ob-jupyter/d3c6f44e38a44da85d3e86eebf95e61f24700356.png]]
 
 ** Statistics
 
@@ -167,7 +174,7 @@
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/c0402ef4d57ea10c8b979bc4ff6bc8258ac43923.png]]
+[[file:./.ob-jupyter/681150b3b207ced35be5989eaab30e1b8e18fa30.png]]
 
 ** Zoomed
 
@@ -178,7 +185,7 @@
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/f081c20ef8862b6d49c75d50ca9db7f8fb609c02.png]]
+[[file:./.ob-jupyter/e6bd3b8e84fbf81d97e5c1c9a8de2f8e15618b94.png]]
 
 ** Statistics
 

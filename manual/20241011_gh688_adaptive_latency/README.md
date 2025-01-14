@@ -7,15 +7,15 @@
   * [Hardware](#hardware)
   * [Software](#software)
 - [Tests](#tests)
-  * [Case 01: `wifi_good--load_none--profile_gradual`](#case-01-wifi_good--load_none--profile_gradual)
-  * [Case 02: `wifi_good--load_none--profile_responsive`](#case-02-wifi_good--load_none--profile_responsive)
-  * [Case 03: `wifi_good--load_medium--profile_gradual`](#case-03-wifi_good--load_medium--profile_gradual)
-  * [Case 04: `wifi_good--load_high--profile_gradual`](#case-04-wifi_good--load_high--profile_gradual)
-  * [Case 05: `wifi_bad--load_none--profile_gradual`](#case-05-wifi_bad--load_none--profile_gradual)
-  * [Case 06: `wifi_bad--load_small--profile_gradual`](#case-06-wifi_bad--load_small--profile_gradual)
-  * [Case 07: `ethernet--default_latency--profile_responsive`](#case-07-ethernet--default_latency--profile_responsive)
-  * [Case 08: `ethernet--low_latency--profile_responsive`](#case-08-ethernet--low_latency--profile_responsive)
-  * [Case 09: `internet--profile_gradual`](#case-09-internet--profile_gradual)
+  * [Case 01: `good_wifi--no_load--gradual_profile`](#case-01-good_wifi--no_load--gradual_profile)
+  * [Case 02: `good_wifi--no_load--responsive_profile`](#case-02-good_wifi--no_load--responsive_profile)
+  * [Case 03: `good_wifi--medium_load--gradual_profile`](#case-03-good_wifi--medium_load--gradual_profile)
+  * [Case 04: `good_wifi--high_load--gradual_profile`](#case-04-good_wifi--high_load--gradual_profile)
+  * [Case 05: `bad_wifi--no_load--gradual_profile`](#case-05-bad_wifi--no_load--gradual_profile)
+  * [Case 06: `bad_wifi--low_load--gradual_profile`](#case-06-bad_wifi--low_load--gradual_profile)
+  * [Case 07: `ethernet--default_latency--responsive_profile`](#case-07-ethernet--default_latency--responsive_profile)
+  * [Case 08: `ethernet--low_latency--responsive_profile`](#case-08-ethernet--low_latency--responsive_profile)
+  * [Case 09: `internet--gradual_profile`](#case-09-internet--gradual_profile)
 
 <!-- tocstop -->
 
@@ -64,7 +64,7 @@ Profile:
 
 # Tests
 
-## Case 01: `wifi_good--load_none--profile_gradual`
+## Case 01: `good_wifi--no_load--gradual_profile`
 
 Verdict: **good**
 
@@ -90,19 +90,19 @@ roc-recv -vv -s rtp+rs8m://0.0.0.0:20001 -r rs8m://0.0.0.0:20002 -c rtcp://0.0.0
 
 Measurements:
 
-[**dump.csv.xz**](01--wifi_good--load_none--profile_gradual/dump.csv.xz)
+[**dump.csv.xz**](01--good_wifi--no_load--gradual_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="01--wifi_good--load_none--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="01--wifi_good--load_none--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="01--wifi_good--load_none--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="01--wifi_good--load_none--profile_gradual/screenshot_04.gif"/></td>
-    <td><img width="160px" src="01--wifi_good--load_none--profile_gradual/screenshot_05.gif"/></td>
+    <td><img width="160px" src="01--good_wifi--no_load--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="01--good_wifi--no_load--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="01--good_wifi--no_load--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="01--good_wifi--no_load--gradual_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="01--good_wifi--no_load--gradual_profile/screenshot_05.gif"/></td>
   </tr>
 </table>
 
-## Case 02: `wifi_good--load_none--profile_responsive`
+## Case 02: `good_wifi--no_load--responsive_profile`
 
 Verdict: **good**
 
@@ -128,20 +128,20 @@ roc-recv -vv -s rtp+rs8m://0.0.0.0:20001 -r rs8m://0.0.0.0:20002 -c rtcp://0.0.0
 
 Measurements:
 
-[**dump.csv.xz**](02--wifi_good--load_none--profile_responsive/dump.csv.xz)
+[**dump.csv.xz**](02--good_wifi--no_load--responsive_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_01.gif"/></td>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_02.gif"/></td>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_03.gif"/></td>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_04.gif"/></td>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_05.gif"/></td>
-    <td><img width="160px" src="02--wifi_good--load_none--profile_responsive/screenshot_06.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_05.gif"/></td>
+    <td><img width="160px" src="02--good_wifi--no_load--responsive_profile/screenshot_06.gif"/></td>
   </tr>
 </table>
 
-## Case 03: `wifi_good--load_medium--profile_gradual`
+## Case 03: `good_wifi--medium_load--gradual_profile`
 
 Verdict: **good**
 
@@ -173,14 +173,14 @@ sudo hping3 -i u1000 -S -p 80 raspberrypi-4b-ubuntu.lan
 
 Measurements:
 
-[**dump.csv.xz**](03--wifi_good--load_medium--profile_gradual/dump.csv.xz)
+[**dump.csv.xz**](03--good_wifi--medium_load--gradual_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="03--wifi_good--load_medium--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="03--wifi_good--load_medium--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="03--wifi_good--load_medium--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="03--wifi_good--load_medium--profile_gradual/screenshot_04.gif"/></td>
+    <td><img width="160px" src="03--good_wifi--medium_load--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="03--good_wifi--medium_load--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="03--good_wifi--medium_load--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="03--good_wifi--medium_load--gradual_profile/screenshot_04.gif"/></td>
   </tr>
   <tr>
     <td></td>
@@ -190,7 +190,7 @@ Measurements:
   </tr>
 </table>
 
-## Case 04: `wifi_good--load_high--profile_gradual`
+## Case 04: `good_wifi--high_load--gradual_profile`
 
 Verdict: **good**
 
@@ -226,10 +226,10 @@ Measurements:
 
 <table>
   <tr>
-    <td><img width="160px" src="04--wifi_good--load_high--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="04--wifi_good--load_high--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="04--wifi_good--load_high--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="04--wifi_good--load_high--profile_gradual/screenshot_04.gif"/></td>
+    <td><img width="160px" src="04--good_wifi--high_load--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="04--good_wifi--high_load--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="04--good_wifi--high_load--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="04--good_wifi--high_load--gradual_profile/screenshot_04.gif"/></td>
   </tr>
   <tr>
     <td></td>
@@ -239,7 +239,7 @@ Measurements:
   </tr>
 </table>
 
-## Case 05: `wifi_bad--load_none--profile_gradual`
+## Case 05: `bad_wifi--no_load--gradual_profile`
 
 Verdict: **problematic** (good when manually configuring --min-latency and --start-latency)
 
@@ -269,16 +269,16 @@ roc-recv -vv -s rtp+rs8m://0.0.0.0:20001 -r rs8m://0.0.0.0:20002 -c rtcp://0.0.0
 
 Measurements:
 
-[**dump.csv.xz**](05--wifi_bad--load_none--profile_gradual/dump.csv.xz)
+[**dump.csv.xz**](05--bad_wifi--no_load--gradual_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_04.gif"/></td>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_05.gif"/></td>
-    <td><img width="160px" src="05--wifi_bad--load_none--profile_gradual/screenshot_06.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_05.gif"/></td>
+    <td><img width="160px" src="05--bad_wifi--no_load--gradual_profile/screenshot_06.gif"/></td>
   </tr>
   <tr>
     <td></td>
@@ -290,7 +290,7 @@ Measurements:
   </tr>
 </table>
 
-## Case 06: `wifi_bad--load_small--profile_gradual`
+## Case 06: `bad_wifi--low_load--gradual_profile`
 
 Verdict: **unusable** (burst delays are too rare and huge - above second)
 
@@ -328,15 +328,15 @@ sudo hping3 -i u5000 -S -p 80 raspberrypi-4b-ubuntu.lan
 
 Measurements:
 
-[**dump.csv.xz**](06--wifi_bad--load_small--profile_gradual/dump.csv.xz)
+[**dump.csv.xz**](06--bad_wifi--low_load--gradual_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="06--wifi_bad--load_small--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="06--wifi_bad--load_small--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="06--wifi_bad--load_small--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="06--wifi_bad--load_small--profile_gradual/screenshot_04.gif"/></td>
-    <td><img width="160px" src="06--wifi_bad--load_small--profile_gradual/screenshot_05.gif"/></td>
+    <td><img width="160px" src="06--bad_wifi--low_load--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="06--bad_wifi--low_load--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="06--bad_wifi--low_load--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="06--bad_wifi--low_load--gradual_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="06--bad_wifi--low_load--gradual_profile/screenshot_05.gif"/></td>
   </tr>
   <tr>
     <td></td>
@@ -347,7 +347,7 @@ Measurements:
   </tr>
 </table>
 
-## Case 07: `ethernet--default_latency--profile_responsive`
+## Case 07: `ethernet--default_latency--responsive_profile`
 
 Verdict: **good but non-optimal**
 
@@ -389,14 +389,14 @@ sudo hping3 -i u10 -S -p 80 raspberrypi-4b-ubuntu.lan
 
 Measurements:
 
-[**dump.csv.xz**](07--ethernet--default_latency--profile_responsive/dump.csv.xz)
+[**dump.csv.xz**](07--ethernet--default_latency--responsive_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="07--ethernet--default_latency--profile_responsive/screenshot_01.gif"/></td>
-    <td><img width="160px" src="07--ethernet--default_latency--profile_responsive/screenshot_02.gif"/></td>
-    <td><img width="160px" src="07--ethernet--default_latency--profile_responsive/screenshot_03.gif"/></td>
-    <td><img width="160px" src="07--ethernet--default_latency--profile_responsive/screenshot_04.gif"/></td>
+    <td><img width="160px" src="07--ethernet--default_latency--responsive_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="07--ethernet--default_latency--responsive_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="07--ethernet--default_latency--responsive_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="07--ethernet--default_latency--responsive_profile/screenshot_04.gif"/></td>
   </tr>
   <tr>
     <td></td>
@@ -406,7 +406,7 @@ Measurements:
   </tr>
 </table>
 
-## Case 08: `ethernet--low_latency--profile_responsive`
+## Case 08: `ethernet--low_latency--responsive_profile`
 
 Verdict: **good**
 
@@ -439,19 +439,19 @@ roc-recv -vv -s rtp+rs8m://0.0.0.0:20001 -r rs8m://0.0.0.0:20002 -c rtcp://0.0.0
 
 Measurements:
 
-[**dump.csv.xz**](08--ethernet--low_latency--profile_responsive/dump.csv.xz)
+[**dump.csv.xz**](08--ethernet--low_latency--responsive_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="08--ethernet--low_latency--profile_responsive/screenshot_01.gif"/></td>
-    <td><img width="160px" src="08--ethernet--low_latency--profile_responsive/screenshot_02.gif"/></td>
-    <td><img width="160px" src="08--ethernet--low_latency--profile_responsive/screenshot_03.gif"/></td>
-    <td><img width="160px" src="08--ethernet--low_latency--profile_responsive/screenshot_04.gif"/></td>
-    <td><img width="160px" src="08--ethernet--low_latency--profile_responsive/screenshot_05.gif"/></td>
+    <td><img width="160px" src="08--ethernet--low_latency--responsive_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="08--ethernet--low_latency--responsive_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="08--ethernet--low_latency--responsive_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="08--ethernet--low_latency--responsive_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="08--ethernet--low_latency--responsive_profile/screenshot_05.gif"/></td>
   </tr>
 </table>
 
-## Case 09: `internet--profile_gradual`
+## Case 09: `internet--gradual_profile`
 
 Verdict: **mostly good**
 
@@ -489,18 +489,18 @@ sudo hping3 -i u500 -S -p 80 10.9.8.50
 
 Measurements:
 
-[**dump.csv.xz**](09--internet--profile_gradual/dump.csv.xz)
+[**dump.csv.xz**](09--internet--gradual_profile/dump.csv.xz)
 
 <table>
   <tr>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_01.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_02.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_03.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_04.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_05.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_06.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_07.gif"/></td>
-    <td><img width="160px" src="09--internet--profile_gradual/screenshot_08.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_01.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_02.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_03.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_04.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_05.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_06.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_07.gif"/></td>
+    <td><img width="160px" src="09--internet--gradual_profile/screenshot_08.gif"/></td>
   </tr>
   <tr>
     <td></td>

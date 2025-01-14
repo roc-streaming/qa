@@ -1,5 +1,12 @@
+# -*- org-image-actual-width: 1000; -*-
 #+OPTIONS: toc:nil
-#+TOC: headlines 1
+
+* HEADING =01--good_wifi--no_load=
+  :PROPERTIES:
+  :UNNUMBERED: notoc
+  :END:
+  #+TOC: headlines 1
+
 
 * SECTION Test summary
 
@@ -10,13 +17,13 @@
   - Receiver: PC (=x86_64=)
 
 - *Network*
-  - Ethernet (direct connection)
+  - Wi-Fi 5GHz
 
 - *Audio*
   - input and output are WAV files
 
 - *Ping*
-  - below 0.3ms
+  - below 3ms
 
 - *Scheduling*
   - =SCHED_RR= disabled
@@ -50,24 +57,31 @@
    Rough difference between unix time on two machines.
 
    #+begin_src shell :results verbatim
-     ssh raspberrypi-4b.eth "date -u +%s" | awk -v local="$(date -u +%s)" '{print local - $1}'
+     ssh raspberrypi-4b.lan "date -u +%s" | awk -v local="$(date -u +%s)" '{print local - $1}'
    #+end_src
 
    #+results:
-   : 11798932
+   : 11747389
 
 - *Estimate ping*
 
    #+begin_src shell :results verbatim
-     ping -q -i 0.002 -c 1000 raspberrypi-4b.eth
+     ping -c 5 raspberrypi-4b.lan
    #+end_src
 
    #+results:
-   : PING raspberrypi-4b.eth (192.168.2.131) 56(84) bytes of data.
-   :
-   : --- raspberrypi-4b.eth ping statistics ---
-   : 1000 packets transmitted, 1000 received, 0% packet loss, time 1996ms
-   : rtt min/avg/max/mdev = 0.119/0.149/0.250/0.025 ms
+   #+begin_example
+   PING raspberrypi-4b.lan (192.168.0.141) 56(84) bytes of data.
+   64 bytes from raspberrypi-4b.lan (192.168.0.141): icmp_seq=1 ttl=64 time=3.52 ms
+   64 bytes from raspberrypi-4b.lan (192.168.0.141): icmp_seq=2 ttl=64 time=3.45 ms
+   64 bytes from raspberrypi-4b.lan (192.168.0.141): icmp_seq=3 ttl=64 time=3.29 ms
+   64 bytes from raspberrypi-4b.lan (192.168.0.141): icmp_seq=4 ttl=64 time=1.90 ms
+   64 bytes from raspberrypi-4b.lan (192.168.0.141): icmp_seq=5 ttl=64 time=3.40 ms
+
+   --- raspberrypi-4b.lan ping statistics ---
+   5 packets transmitted, 5 received, 0% packet loss, time 4005ms
+   rtt min/avg/max/mdev = 1.898/3.109/3.516/0.610 ms
+   #+end_example
 
 ** Running
 
@@ -80,7 +94,7 @@
 - *run roc-send*
 
    #+begin_example
-   ./roc-send -vv -s rtp+rs8m://dell-xps15.eth:10001 -r rs8m://dell-xps15.eth:10002 -c rtcp://dell-xps15.eth:10003 -i file:long.wav
+   ./roc-send -vv -s rtp+rs8m://dell-xps15.lan:10001 -r rs8m://dell-xps15.lan:10002 -c rtcp://dell-xps15.lan:10003 -i file:long.wav
    #+end_example
 
 - *run roc-recv*
@@ -103,15 +117,14 @@
   <summary>Click to expand</summary>
 #+end_export
 
-#+transclude: [[file:setup.py]]  :src jupyter-python :rest ":session report03 :results none"
+#+transclude: [[file:setup.py]]  :src jupyter-python :rest ":session report01 :results none"
 
 #+begin_export html
 </details>
 #+end_export
 
-#+begin_src jupyter-python :session report03 :results none
-  data = load_csv('03_ether_rpi_pc.csv')
-  data = data[1:,]
+#+begin_src jupyter-python :session report01 :results none
+  data = load_csv('01--good_wifi--no_load.csv')
 #+end_src
 
 
@@ -119,29 +132,29 @@
 
 ** Overall
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   plt.plot(data[:,0]/60, data[:,1]*1000)
   plt.legend(['rtt, ms'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/e6b25f42610877625a6981b4dabf2dababd24c9f.png]]
+[[file:./.ob-jupyter/8497f317dc637a927347614e7e0b7d828666cddf.png]]
 
 ** Zoomed
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   plt.plot(data[550:600,0]/60, data[550:600,1]*1000)
   plt.legend(['rtt, ms'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/5945650b6c7d205fb0295bb277d9944e1f61df50.png]]
+[[file:./.ob-jupyter/c989c88663b1497a9746ca7d49d66951a51c4518.png]]
 
 ** Statistics
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   format_tables(stats_table('rtt', data[:,1]),
                 jitter_table('rtt_jitter', data[:,1]))
 #+end_src
@@ -149,40 +162,39 @@
 #+results:
 |       | *=rtt=*  | *=rtt_jitter=* |
 |-------+----------+----------------|
-| *min* | 0.356 ms | 0.000 ms       |
-| *max* | 0.529 ms | 0.169 ms       |
-| *avg* | 0.462 ms | 0.010 ms       |
-| *p95* | 0.508 ms | 0.037 ms       |
+| *min* | 1.957 ms | 0.000 ms       |
+| *max* | 4.449 ms | 2.028 ms       |
+| *avg* | 2.509 ms | 0.068 ms       |
+| *p95* | 2.994 ms | 0.269 ms       |
 
 
 * SECTION Clock Offset
 
 ** Overall
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   plt.plot(data[:,0]/60, data[:,2], 'C5')
   plt.legend(['clock_offset, sec'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/8558d97a5e85d75ef8de7a646449764af2cc0531.png]]
-
+[[file:./.ob-jupyter/5d3877e15bb6f4e95d1e43e64bb18957a43b4975.png]]
 
 ** Zoomed
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   plt.plot(data[550:600,0]/60, data[550:600,2]*1000, 'C5')
   plt.legend(['clock_offset, sec'], labelcolor='linecolor')
   configure_plot()
 #+end_src
 
 #+results:
-[[file:./.ob-jupyter/6cad361c1467cff15eaf6de9e761718f2677620f.png]]
+[[file:./.ob-jupyter/55f4ea3548c2b49fab1965e92556d48514e7dc09.png]]
 
 ** Statistics
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   format_tables(jitter_table('clock_offset_jitter', data[:,2]))
 #+end_src
 
@@ -190,11 +202,11 @@
 |       | *=clock_offset_jitter=* |
 |-------+-------------------------|
 | *min* | 0.000 ms                |
-| *max* | 0.038 ms                |
-| *avg* | 0.003 ms                |
-| *p95* | 0.010 ms                |
+| *max* | 0.376 ms                |
+| *avg* | 0.005 ms                |
+| *p95* | 0.017 ms                |
 
-#+begin_src jupyter-python :session report03
+#+begin_src jupyter-python :session report01
   format_tables(drift_table('clock_offset_drift', data[:,0], data[:,2]))
 #+end_src
 
@@ -202,4 +214,4 @@
 |           | *=clock_offset_drift=* |
 |-----------+------------------------|
 | *sec/sec* |               0.000016 |
-| *sec/day* |                  1.378 |
+| *sec/day* |                  1.418 |
