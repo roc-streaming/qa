@@ -66,6 +66,29 @@ def plot_bars(x, y, bottom=None, offset=None, step=20/60, width=None, *args, **k
   # can be used as bottom for another plot
   return yc
 
+def plot_pie(sizes, labels=[], colors=[], autopct='%1.0f%%', *args, **kw):
+  n = 0
+  while n < len(sizes):
+    if sizes[n] == 0:
+      del sizes[n]
+      if labels:
+        del labels[n]
+      if colors:
+        del colors[n]
+    else:
+      n += 1
+
+  plt.figure(dpi=200)
+  plt.subplots_adjust(top=0.6, bottom=0.4)
+
+  patches, texts, autotexts = plt.pie(
+    sizes, labels=labels, colors=colors, textprops={'fontsize': 14},
+    autopct=autopct, *args, **kw)
+  for text in texts:
+    text.set_color('white')
+  for autotext in autotexts:
+    autotext.set_color('black')
+
 def in_notebook():
   for var in ['JPY_PARENT_PID', 'JUPYTERLAB_PATH']:
     if var in os.environ:

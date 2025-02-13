@@ -1,0 +1,213 @@
+# -*- org-export-with-todo-keywords: nil; org-export-use-babel: t; org-edit-src-content-indentation: 2; org-src-preserve-indentation: nil; org-babel-results-keyword: "results"; org-image-actual-width: 1100; org-make-toc-insert-custom-ids: t; org-pandoc-format-extensions: (markdown_github+pipe_tables+raw_html); -*-
+#+PROPERTY: HEADER-ARGS                 :eval never-export
+#+PROPERTY: HEADER-ARGS:shell           :shebang /bin/bash
+#+PROPERTY: HEADER-ARGS:jupyter-python  :session 20250214_gh712_jitter_sim
+#+EXPORT_FILE_NAME: README
+#+OPTIONS: toc:nil
+#+OPTIONS: tags:nil
+
+* HEADING TEST =20250214_gh712_jitter_sim=                          :noipynb:
+  :PROPERTIES:
+  :TOC:      :include siblings :depth 1 :ignore this
+  :END:
+
+*Table of contents:*
+
+:CONTENTS:
+- [[#test-summary][Test summary]]
+- [[#library-code][Library code]]
+- [[#simulation-code][Simulation code]]
+- [[#case-01-5ghz--no-load][Case 01: 5ghz--no-load]]
+- [[#case-02-5ghz--with-load][Case 02: 5ghz--with-load]]
+- [[#case-03-52ghz--no-load][Case 03: 5+2ghz--no-load]]
+- [[#case-04-52ghz--with-load][Case 04: 5+2ghz--with-load]]
+:END:
+
+* SECTION Test summary                                              :noipynb:
+  :PROPERTIES:
+  :CUSTOM_ID: test-summary
+  :END:
+
+*Test:* =20250214_gh712_jitter_sim= Simulation of peak jitter algorithms.
+
+*Date:*
+
+#+begin_src shell :results drawer :exports results :prologue ""
+  date "+%a %d %b %Y"
+#+end_src
+
+#+results:
+:results:
+Sat 15 Feb 2025
+:end:
+
+*Jupyter notebook:*
+
+[[file:README.ipynb][=README.ipynb=]]
+
+* SECTION Library code
+  :PROPERTIES:
+  :CUSTOM_ID: library-code
+  :END:
+
+[[file:library.py][=library.py=]]
+
+#+transclude: [[file:./library.py]]  :src jupyter-python :rest ":results none"
+
+* SECTION Simulation code
+  :PROPERTIES:
+  :CUSTOM_ID: simulation-code
+  :END:
+
+** MovStats
+
+[[file:sim/mov_stats.py][=sim/mov_stats.py=]]
+
+#+transclude: [[file:./sim/mov_stats.py]]  :src jupyter-python :rest ":results none"
+
+** JitterMeter
+
+[[file:sim/jitter_meter.py][=sim/jitter_meter.py=]]
+
+#+transclude: [[file:./sim/jitter_meter.py]]  :src jupyter-python :rest ":results none"
+
+** PyTest
+
+#+begin_src shell :results verbatim :exports both
+  pytest -v --no-header --doctest-modules sim
+#+end_src
+
+#+results:
+: ============================= test session starts ==============================
+: collecting ... collected 4 items
+: 
+: sim/jitter_meter.py::sim.jitter_meter.JitterMeterA PASSED                [ 25%]
+: sim/mov_stats.py::sim.mov_stats.MovAvgStd PASSED                         [ 50%]
+: sim/mov_stats.py::sim.mov_stats.MovMinMax PASSED                         [ 75%]
+: sim/mov_stats.py::sim.mov_stats.MovQuantile PASSED                       [100%]
+: 
+: ============================== 4 passed in 0.74s ===============================
+
+* SECTION Case 01: =5ghz--no-load=
+  :PROPERTIES:
+  :CUSTOM_ID: case-01-5ghz--no-load
+  :END:
+
+#+begin_src jupyter-python :results none :async yes
+  data = load_report('01--5ghz--no_load')
+
+  rep = addict.Dict()
+  rep.timestamp = data['m'][:,0]
+  rep.rec_jitter = data['m'][:,2]
+  rep.rec_peak_jitter = data['m'][:,3]
+  rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+  rep1 = rep
+#+end_src
+
+#+begin_src jupyter-python :exports both
+  plt.plot(rep1.timestamp/60, rep1.rec_jitter/1e6, 'C4')
+  plt.plot(rep1.timestamp/60, rep1.rec_peak_jitter/1e6, 'C5')
+  plt.plot(rep1.timestamp/60, rep1.sim_peak_jitter/1e6, 'C8',
+           linewidth=3, linestyle=(0, (3, 3)))
+  plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+             labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+  configure_plot()
+#+end_src
+
+#+attr_html: :width 700
+#+results:
+[[file:./.ob-jupyter/dd20da6e5559d522d16e26e7a542866b09d40055.png]]
+
+* SECTION Case 02: =5ghz--with-load=
+  :PROPERTIES:
+  :CUSTOM_ID: case-02-5ghz--with-load
+  :END:
+
+#+begin_src jupyter-python :results none :async yes
+  data = load_report('02--5ghz--with_load')
+
+  rep = addict.Dict()
+  rep.timestamp = data['m'][:,0]
+  rep.rec_jitter = data['m'][:,2]
+  rep.rec_peak_jitter = data['m'][:,3]
+  rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+  rep2 = rep
+#+end_src
+
+#+begin_src jupyter-python :exports both
+  plt.plot(rep2.timestamp/60, rep2.rec_jitter/1e6, 'C4')
+  plt.plot(rep2.timestamp/60, rep2.rec_peak_jitter/1e6, 'C5')
+  plt.plot(rep2.timestamp/60, rep2.sim_peak_jitter/1e6, 'C8', 
+           linewidth=3, linestyle=(0, (3, 3)))
+  plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+             labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+  configure_plot()
+#+end_src
+
+#+attr_html: :width 700
+#+results:
+[[file:./.ob-jupyter/300f3a947d4e2c9835c0861473b5faf0f3796688.png]]
+
+* SECTION Case 03: =5+2ghz--no-load=
+  :PROPERTIES:
+  :CUSTOM_ID: case-03-52ghz--no-load
+  :END:
+
+#+begin_src jupyter-python :results none :async yes
+  data = load_report('03--5+2ghz--no_load')
+
+  rep = addict.Dict()
+  rep.timestamp = data['m'][:,0]
+  rep.rec_jitter = data['m'][:,2]
+  rep.rec_peak_jitter = data['m'][:,3]
+  rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+  rep3 = rep
+#+end_src
+
+#+begin_src jupyter-python :exports both
+  plt.plot(rep3.timestamp/60, rep3.rec_jitter/1e6, 'C4')
+  plt.plot(rep3.timestamp/60, rep3.rec_peak_jitter/1e6, 'C5')
+  plt.plot(rep3.timestamp/60, rep3.sim_peak_jitter/1e6, 'C8', 
+           linewidth=3, linestyle=(0, (3, 3)))
+  plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+             labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+  configure_plot()
+#+end_src
+
+#+attr_html: :width 700
+#+results:
+[[file:./.ob-jupyter/bf20bf8728901d7ac99ac3bbe943a30663678248.png]]
+
+* SECTION Case 04: =5+2ghz--with-load=
+  :PROPERTIES:
+  :CUSTOM_ID: case-04-52ghz--with-load
+  :END:
+
+#+begin_src jupyter-python :results none :async yes
+  data = load_report('04--5+2ghz--with_load')
+
+  rep = addict.Dict()
+  rep.timestamp = data['m'][:,0]
+  rep.rec_jitter = data['m'][:,2]
+  rep.rec_peak_jitter = data['m'][:,3]
+  rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+  rep4 = rep
+#+end_src
+
+#+begin_src jupyter-python :exports both
+  plt.plot(rep4.timestamp/60, rep4.rec_jitter/1e6, 'C4')
+  plt.plot(rep4.timestamp/60, rep4.rec_peak_jitter/1e6, 'C5')
+  plt.plot(rep4.timestamp/60, rep4.sim_peak_jitter/1e6, 'C8', 
+           linewidth=3, linestyle=(0, (3, 3)))
+  plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+             labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+  configure_plot()
+#+end_src
+
+#+attr_html: :width 700
+#+results:
+[[file:./.ob-jupyter/0e694d7b203afb10cba4991d5639af0a1645f062.png]]

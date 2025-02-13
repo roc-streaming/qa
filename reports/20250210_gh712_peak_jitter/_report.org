@@ -1,0 +1,40 @@
+# -*- org-export-with-todo-keywords: nil; org-export-use-babel: t; org-edit-src-content-indentation: 2; org-src-preserve-indentation: nil; org-babel-results-keyword: "results"; org-pandoc-format-extensions: (markdown_github+pipe_tables+raw_html); -*-
+#+PROPERTY: HEADER-ARGS :eval never-export
+#+EXPORT_FILE_NAME: README
+#+OPTIONS: toc:nil
+#+OPTIONS: tags:nil
+
+* SECTION TEST GROUP =20250210_gh712_peak_jitter=
+
+*Description:* Testing peak jitter calculation.
+
+*Issue:* [[https://github.com/roc-streaming/roc-toolkit/issues/712][roc-streaming/roc-toolkit#712]]
+
+*Tests:*
+
+#+begin_src python :results value table :exports results
+  import os
+  import re
+  table = [['*Test*', '*Description*'], None]
+  for dir in sorted(os.listdir('.')):
+    if re.match(r'^\d+-+', dir):
+      report = os.path.join(dir, '_report.org')
+      if os.path.exists(report):
+        with open(report) as fp:
+          for line in fp:
+            m = re.match(r'^\*Test:\*\s+=([^=]+)=\s+(.+)$', line.strip())
+            if m:
+              table += [[f'[[file:{dir}/README.md][={m.group(1)}=]]', m.group(2)]]
+  return table
+#+end_src
+
+#+results:
+| *Test*                         | *Description*                                                   |
+|--------------------------------+-----------------------------------------------------------------|
+| [[file:01--5ghz--no_load/README.md][=01--5ghz--no_load=]]            | 5GHz Wi-Fi link, no external load.                              |
+| [[file:02--5ghz--with_load/README.md][=02--5ghz--with_load=]]          | 5GHz Wi-Fi link, simulated network load.                        |
+| [[file:03--5+2ghz--no_load/README.md][=03--5+2ghz--no_load=]]          | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), no external load.        |
+| [[file:04--5+2ghz--with_load/README.md][=04--5+2ghz--with_load=]]        | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), simulated network load.  |
+| [[file:05--2ghz--no_load--low_res/README.md][=05--2ghz--no_load--low_res=]]   | 2.5GHz Wi-Fi link, no external load. Low-resolution dump.       |
+| [[file:06--2ghz--with_load--low_res/README.md][=06--2ghz--with_load--low_res=]] | 2.5GHz Wi-Fi link, simulated network load. Low-resolution dump. |
+| [[file:07--ether--spikes/README.md][=07--ether--spikes=]]            | Ethernet, short simulated load spikes.                          |
