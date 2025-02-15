@@ -33,7 +33,7 @@ class JitterMeter:
 
   def __init__(self, config=None):
     if not config:
-        config = JitterMeterConfig()
+      config = JitterMeterConfig()
     self._config = config
     self._metrics = JitterMetrics()
     self._jitter_window = MovAvgStd(config.jitter_window)
@@ -50,10 +50,11 @@ class JitterMeter:
 
   def update_jitter(self, jitter):
     self._jitter_window.add(jitter)
-    self._smooth_jitter_window.add(jitter)
 
+    self._smooth_jitter_window.add(jitter)
     jitter_envelope = self._update_envelope(
         self._smooth_jitter_window.mov_max(), self._jitter_window.mov_avg())
+
     self._envelope_window.add(jitter_envelope)
     self._peak_window.add(self._envelope_window.mov_quantile())
 
@@ -71,7 +72,7 @@ class JitterMeter:
       self._capacitor_discharge_iteration = 0
     elif self._capacitor_charge > 0:
       self._capacitor_charge *= math.exp(
-        -self._capacitor_discharge_iteration / self._config.envelope_resistance_coeff)
+        -self._capacitor_discharge_iteration / self._capacitor_discharge_resistance)
       self._capacitor_discharge_iteration += 1
     if self._capacitor_charge < 0:
       self._capacitor_charge = 0

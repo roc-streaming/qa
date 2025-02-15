@@ -4,7 +4,7 @@
 from random import randint, random
 import numpy as np
 
-class MovQuantilePort:
+class MovQuantileHeap:
   """
   >>> N_ITERS = 10
   >>> N_ELEMS = 1000
@@ -13,7 +13,7 @@ class MovQuantilePort:
   >>> for iter in range(N_ITERS):
   ...   win_sz = randint(MIN_WINDOW, MAX_WINDOW)
   ...   quant = random()
-  ...   comp = MovQuantilePort(win_sz, quant)
+  ...   comp = MovQuantileHeap(win_sz, quant)
   ...   elems = np.zeros(N_ELEMS)
   ...   n_elems = 0
   ...   for n in range(N_ELEMS):

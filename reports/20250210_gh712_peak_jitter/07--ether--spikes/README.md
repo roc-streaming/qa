@@ -19,7 +19,7 @@ calculation.
 
 **Date:**
 
-Thu 13 Feb 2025
+Sat 15 Feb 2025
 
 **Artifacts:**
 
@@ -27,7 +27,6 @@ Thu 13 Feb 2025
 |---------------|--------------------------------------|
 | receiver dump | [`roc_recv.csv.xz`](roc_recv.csv.xz) |
 | receiver log  | [`roc_recv.log.xz`](roc_recv.log.xz) |
-| sender log    | [`roc_send.log.xz`](roc_send.log.xz) |
 
 **Jupyter notebook:**
 
@@ -59,10 +58,10 @@ Thu 13 Feb 2025
 
     ``` example
     # OUTPUT:
-    commit a02a89458df136c7dc7585e1f25a7ae1a722afd3
+    commit 62100a71dc06c20b94304110e6d228083fdd8125
     Author: Victor Gaydov <victor@enise.org>
 
-        scripts: Fixes in rgh.py
+        chore: Use nanoseconds for all jitter entries in dump
     ```
 
     ``` shell
@@ -71,10 +70,10 @@ Thu 13 Feb 2025
 
     ``` example
     # OUTPUT:
-    commit 76e75481d818663166396b03ccc39687fd0a2d1a
+    commit e8afcd190cda52198cc13a89cad7479e2ae5bba6
     Author: Victor Gaydov <victor@enise.org>
 
-        Add DepacketizerPlotter
+        "Decimation"
     ```
 
 -   **roc-toolkit version**
@@ -85,21 +84,21 @@ Thu 13 Feb 2025
 
     ``` example
     # OUTPUT:
-    roc-recv 0.4.0 (b2798abb92)
+    roc-recv 0.4.0 (f725325e26)
     ```
 
     ``` shell
-    ssh raspberrypi-4b-ubuntu.eth ./roc/roc-send --version
+    ssh ubuntu@raspberrypi-4b-ubuntu.eth ./roc/roc-send --version
     ```
 
     ``` example
     # OUTPUT:
-    roc-send 0.4.0 (b2798abb92)
+    roc-send 0.4.0 (f725325e26)
     ```
 
 ## Configuration
 
-Sender streams to receiver during ~10 minutes.
+Sender streams to receiver during ~6 minutes.
 
 Protocols:
 
@@ -143,7 +142,7 @@ Receiver options:
     On sender (`raspberrypi-4b-ubuntu.eth`):
 
     ``` example
-    ./reclog -o roc_send.log ./roc/roc-send -vv -s rtp+rs8m://dell-xps15.lan:10001 -r rs8m://dell-xps15.lan:10002 -c rtcp://dell-xps15.lan:10003 -i file:long.wav
+    ./roc/roc-send -vv -s rtp+rs8m://dell-xps15.eth:10001 -r rs8m://dell-xps15.eth:10002 -c rtcp://dell-xps15.eth:10003 -i file:long.wav
     ```
 
 -   **run roc-recv**
@@ -153,6 +152,18 @@ Receiver options:
     ``` example
     reclog -o roc_recv.log roc-recv -vv -s rtp+rs8m://0.0.0.0:10001 -r rs8m://0.0.0.0:10002 -c rtcp://0.0.0.0:10003 --plc beep --dump roc_recv.csv
     ```
+
+-   **generating load**
+
+    On receiver (`dell-xps15.lan`):
+
+    ``` example
+    ssh ubuntu@raspberrypi-4b-ubuntu.eth cat /dev/random > /dev/null
+    ```
+
+    We run this from time to time during the benchmark, from 0 to 4
+    streams simultaneously. When there were many parallel instances, you
+    can see high jitter spikes on the plot.
 
 -   **run csvplotter**
 
@@ -175,8 +186,8 @@ Receiver options:
     PING raspberrypi-4b-ubuntu.eth (192.168.3.142) 56(84) bytes of data.
 
     --- raspberrypi-4b-ubuntu.eth ping statistics ---
-    1000 packets transmitted, 1000 received, 0% packet loss, time 1997ms
-    rtt min/avg/max/mdev = 0.107/0.130/0.323/0.017 ms
+    1000 packets transmitted, 1000 received, 0% packet loss, time 1996ms
+    rtt min/avg/max/mdev = 0.113/0.134/0.274/0.019 ms
     ```
 
 # Library code
@@ -342,29 +353,29 @@ dict_keys(['m', 'd', 't', 'f'])
 ## Plot
 
 ``` python
-plt.plot(data['m'][:,0]/60, data['m'][:,2], 'C4')
+plt.plot(data['m'][:,0]/60, data['m'][:,2]/1e6, 'C4')
 plt.plot(data['m'][:,0]/60, data['m'][:,3]/1e6, 'C5')
 plt.legend(['jitter, ms', 'peak_jitter, ms', 'envelope, ms'],
            labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
 configure_plot()
 ```
 
-<img src="./.ob-jupyter/406af64359a3d760714ce2259efae84385b10e5e.png"
+<img src="./.ob-jupyter/32c9ff0e170746b70a224a9178fa0dc656aa8937.png"
 width="700" />
 
 ## Statistics
 
 ``` python
-format_tables(stats_table('jitter', data['m'][:,2]),
+format_tables(stats_table('jitter', data['m'][:,2]/1e6),
               stats_table('peak-jitter', data['m'][:,3]/1e6))
 ```
 
 |         | **jitter** | **peak-jitter** |
 |---------|------------|-----------------|
-| **min** | 3.881 ms   | 5.007 ms        |
-| **max** | 16.413 ms  | 6.152 ms        |
-| **avg** | 5.644 ms   | 6.151 ms        |
-| **p95** | 5.835 ms   | 6.152 ms        |
+| **min** | 3.978 ms   | 3.978 ms        |
+| **max** | 16.334 ms  | 6.004 ms        |
+| **avg** | 5.304 ms   | 5.974 ms        |
+| **p95** | 5.799 ms   | 6.004 ms        |
 
 # Latency Tuner
 
@@ -378,7 +389,7 @@ plt.legend(['niq_latency, ms', 'target_latency, ms'],
 configure_plot()
 ```
 
-<img src="./.ob-jupyter/600d27bf3f3d9cd9612575965ddf525d8f8d44e6.png"
+<img src="./.ob-jupyter/157c3079d4b47be6d01715e37ab85da7f0dc9ecc.png"
 width="700" />
 
 ## Statistics
@@ -390,10 +401,10 @@ format_tables(stats_table('niq-latency', data['t'][:,1]/44100*1e3),
 
 |         | **niq-latency** | **target-latency** |
 |---------|-----------------|--------------------|
-| **min** | 119.184 ms      | 137.279 ms         |
-| **max** | 217.914 ms      | 217.687 ms         |
-| **avg** | 154.056 ms      | 149.098 ms         |
-| **p95** | 209.819 ms      | 217.687 ms         |
+| **min** | 113.696 ms      | 137.279 ms         |
+| **max** | 229.070 ms      | 217.687 ms         |
+| **avg** | 145.013 ms      | 143.005 ms         |
+| **p95** | 204.862 ms      | 172.880 ms         |
 
 # Depacketizer
 
@@ -408,7 +419,7 @@ plt.legend(['missing samples, ms', 'late samples, ms', 'recovered samples, ms'],
 configure_plot()
 ```
 
-<img src="./.ob-jupyter/e341eb2f33192942940daa7c4b74ee086090a6a3.png"
+<img src="./.ob-jupyter/ccd2f17a0b774040af85361d9fe11dcbeb13c48f.png"
 width="700" />
 
 # Jitter + Niq + Losses
@@ -422,7 +433,7 @@ niq_spikes = np.repeat(np.amin(niq_spikes.reshape(-1, niq_window), axis=1), niq_
 niq_spikes = np.abs(np.diff(niq_spikes))
 plt.plot(data['t'][:len(niq_spikes),0]/60, niq_spikes, 'C1*')
 # jitter
-plt.plot(data['m'][:,0]/60, data['m'][:,2], 'C4')
+plt.plot(data['m'][:,0]/60, data['m'][:,2]/1e6, 'C4')
 # peak jitter
 plt.plot(data['m'][:,0]/60, data['m'][:,3]/1e6, 'C5')
 # missing samples
@@ -432,5 +443,5 @@ plt.legend(['niq spikes, ms', 'jitter, ms', 'peak jitter, ms', 'missing samples,
 configure_plot()
 ```
 
-<img src="./.ob-jupyter/74bae5e84f621a3ede48ffb1817c1eed063b3cd5.png"
+<img src="./.ob-jupyter/093b2cc188ce759534d5ae90dc078b3d8f6bf2d8.png"
 width="700" />

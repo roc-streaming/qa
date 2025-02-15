@@ -3,17 +3,22 @@
 **Table of contents:**
 
 -   [Test summary](#test-summary)
+-   [Test bench](#test-bench)
 -   [Library code](#library-code)
 -   [Simulation code](#simulation-code)
 -   [Case 01: 5ghz–no-load](#case-01-5ghz--no-load)
 -   [Case 02: 5ghz–with-load](#case-02-5ghz--with-load)
 -   [Case 03: 5+2ghz–no-load](#case-03-52ghz--no-load)
 -   [Case 04: 5+2ghz–with-load](#case-04-52ghz--with-load)
+-   [Case 07: ether–spikes](#case-07-ether--spikes)
 
 # Test summary
 
-**Test:** `20250214_gh712_jitter_sim` Simulation of peak jitter
+**Description:** `20250214_gh712_jitter_sim` Simulation of peak jitter
 algorithms.
+
+**Issue:**
+[roc-streaming/roc-toolkit#712](https://github.com/roc-streaming/roc-toolkit/issues/712)
 
 **Date:**
 
@@ -23,9 +28,55 @@ Sat 15 Feb 2025
 
 [`README.ipynb`](README.ipynb)
 
+# Test bench
+
+This test is offline, it uses data from previous benchmarks and does no
+real-time measurements.
+
+In this test, we use:
+
+-   csv dumps from
+    [`20250210_gh712_peak_jitter`](../20250210_gh712_peak_jitter)
+    benchmark (excluding `low_res` tests)
+-   python port of current c++ JitterMeter algorithm
+-   python prototypes of new JitterMeter algorithms
+
+Python JitterMeter and its dependencies (MovAvgStd, MovMinMax, etc.) are
+located in [sim](sim) sub-directory. It is a snapshot of `/sim`
+directory in the repository root (which may change in future).
+
+The test runs python jitter meters on recorded jitter from dumps
+(`rec_jitter`) and compares recorded peak-jitter from dumps
+(`rec_peak_jitter`) with python-calculated peak-jitter
+(`sim_peak_jitter`).
+
+The goal is to check that:
+
+1.  Python port of original jitter meter produces the same results as
+    recorded peak-jitter (i.e. that our simulation test bench works
+    correctly).
+
+    On plots, we want to see that `rec_peak_jitter` (orange line) and
+    `sim_peak_jitter` (dotted line) match each other.
+
+2.  Python prototype of new jitter meter algorithm has no regressions on
+    test data, compared to the original.
+
+Once we develop a prototype that works well on test data, we can port it
+back to C++ and test in real-time.
+
+Jitter meter implementations:
+
+| Python class   | Description                          |
+|----------------|--------------------------------------|
+| `JitterMeterA` | Port of original algorithm from C++. |
+
 # Library code
 
 [`library.py`](library.py)
+
+<details>
+  <summary>Click to expand</summary>
 
 ``` python
 # -*- coding: utf-8; tab-width: 2 -*-
@@ -149,6 +200,8 @@ def format_tables(*tables):
     tbl = res.values.tolist()
     return [tbl[0]] + [None] + tbl[1:]
 ```
+
+</details>
 
 # Simulation code
 
@@ -415,6 +468,8 @@ def sim_jitter_meter(algo, jitter):
 
 ## PyTest
 
+This command runs doctests from the python classes in `sim` directory:
+
 ``` shell
 pytest -v --no-header --doctest-modules sim
 ```
@@ -428,7 +483,7 @@ sim/mov_stats.py::sim.mov_stats.MovAvgStd PASSED                         [ 50%]
 sim/mov_stats.py::sim.mov_stats.MovMinMax PASSED                         [ 75%]
 sim/mov_stats.py::sim.mov_stats.MovQuantile PASSED                       [100%]
 
-============================== 4 passed in 0.74s ===============================
+============================== 4 passed in 0.69s ===============================
 ```
 
 # Case 01: `5ghz--no-load`
@@ -475,7 +530,7 @@ rep2 = rep
 ``` python
 plt.plot(rep2.timestamp/60, rep2.rec_jitter/1e6, 'C4')
 plt.plot(rep2.timestamp/60, rep2.rec_peak_jitter/1e6, 'C5')
-plt.plot(rep2.timestamp/60, rep2.sim_peak_jitter/1e6, 'C8', 
+plt.plot(rep2.timestamp/60, rep2.sim_peak_jitter/1e6, 'C8',
          linewidth=3, linestyle=(0, (3, 3)))
 plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
            labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -502,7 +557,7 @@ rep3 = rep
 ``` python
 plt.plot(rep3.timestamp/60, rep3.rec_jitter/1e6, 'C4')
 plt.plot(rep3.timestamp/60, rep3.rec_peak_jitter/1e6, 'C5')
-plt.plot(rep3.timestamp/60, rep3.sim_peak_jitter/1e6, 'C8', 
+plt.plot(rep3.timestamp/60, rep3.sim_peak_jitter/1e6, 'C8',
          linewidth=3, linestyle=(0, (3, 3)))
 plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
            labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -529,7 +584,7 @@ rep4 = rep
 ``` python
 plt.plot(rep4.timestamp/60, rep4.rec_jitter/1e6, 'C4')
 plt.plot(rep4.timestamp/60, rep4.rec_peak_jitter/1e6, 'C5')
-plt.plot(rep4.timestamp/60, rep4.sim_peak_jitter/1e6, 'C8', 
+plt.plot(rep4.timestamp/60, rep4.sim_peak_jitter/1e6, 'C8',
          linewidth=3, linestyle=(0, (3, 3)))
 plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
            labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -537,4 +592,31 @@ configure_plot()
 ```
 
 <img src="./.ob-jupyter/0e694d7b203afb10cba4991d5639af0a1645f062.png"
+width="700" />
+
+# Case 07: `ether--spikes`
+
+``` python
+data = load_report('07--ether--spikes')
+
+rep = addict.Dict()
+rep.timestamp = data['m'][:,0]
+rep.rec_jitter = data['m'][:,2]
+rep.rec_peak_jitter = data['m'][:,3]
+rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+rep7 = rep
+```
+
+``` python
+plt.plot(rep7.timestamp/60, rep7.rec_jitter/1e6, 'C4')
+plt.plot(rep7.timestamp/60, rep7.rec_peak_jitter/1e6, 'C5')
+plt.plot(rep7.timestamp/60, rep7.sim_peak_jitter/1e6, 'C8',
+         linewidth=3, linestyle=(0, (3, 3)))
+plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+           labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+configure_plot()
+```
+
+<img src="./.ob-jupyter/fb76244e112ffe55c4b1e7225b071f1960562eb2.png"
 width="700" />

@@ -24,17 +24,17 @@
           for line in fp:
             m = re.match(r'^\*Test:\*\s+=([^=]+)=\s+(.+)$', line.strip())
             if m:
-              table += [[f'[[file:{dir}/README.md][={m.group(1)}=]]', m.group(2)]]
+              table += [[f'[[file:{dir}][={m.group(1)}=]]', m.group(2)]]
   return table
 #+end_src
 
 #+results:
 | *Test*                         | *Description*                                                   |
 |--------------------------------+-----------------------------------------------------------------|
-| [[file:01--5ghz--no_load/README.md][=01--5ghz--no_load=]]            | 5GHz Wi-Fi link, no external load.                              |
-| [[file:02--5ghz--with_load/README.md][=02--5ghz--with_load=]]          | 5GHz Wi-Fi link, simulated network load.                        |
-| [[file:03--5+2ghz--no_load/README.md][=03--5+2ghz--no_load=]]          | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), no external load.        |
-| [[file:04--5+2ghz--with_load/README.md][=04--5+2ghz--with_load=]]        | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), simulated network load.  |
-| [[file:05--2ghz--no_load--low_res/README.md][=05--2ghz--no_load--low_res=]]   | 2.5GHz Wi-Fi link, no external load. Low-resolution dump.       |
-| [[file:06--2ghz--with_load--low_res/README.md][=06--2ghz--with_load--low_res=]] | 2.5GHz Wi-Fi link, simulated network load. Low-resolution dump. |
-| [[file:07--ether--spikes/README.md][=07--ether--spikes=]]            | Ethernet, short simulated load spikes.                          |
+| [[file:01--5ghz--no_load][=01--5ghz--no_load=]]            | 5GHz Wi-Fi link, no external load.                              |
+| [[file:02--5ghz--with_load][=02--5ghz--with_load=]]          | 5GHz Wi-Fi link, simulated network load.                        |
+| [[file:03--5+2ghz--no_load][=03--5+2ghz--no_load=]]          | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), no external load.        |
+| [[file:04--5+2ghz--with_load][=04--5+2ghz--with_load=]]        | 5Ghz and 2.5Ghz Wi-Fi SSIDs (same AP), simulated network load.  |
+| [[file:05--2ghz--no_load--low_res][=05--2ghz--no_load--low_res=]]   | 2.5GHz Wi-Fi link, no external load. Low-resolution dump.       |
+| [[file:06--2ghz--with_load--low_res][=06--2ghz--with_load--low_res=]] | 2.5GHz Wi-Fi link, simulated network load. Low-resolution dump. |
+| [[file:07--ether--spikes][=07--ether--spikes=]]            | Ethernet, short simulated load spikes.                          |

@@ -15,12 +15,14 @@
 
 :CONTENTS:
 - [[#test-summary][Test summary]]
+- [[#test-bench][Test bench]]
 - [[#library-code][Library code]]
 - [[#simulation-code][Simulation code]]
 - [[#case-01-5ghz--no-load][Case 01: 5ghz--no-load]]
 - [[#case-02-5ghz--with-load][Case 02: 5ghz--with-load]]
 - [[#case-03-52ghz--no-load][Case 03: 5+2ghz--no-load]]
 - [[#case-04-52ghz--with-load][Case 04: 5+2ghz--with-load]]
+- [[#case-07-ether--spikes][Case 07: ether--spikes]]
 :END:
 
 * SECTION Test summary                                              :noipynb:
@@ -28,7 +30,9 @@
   :CUSTOM_ID: test-summary
   :END:
 
-*Test:* =20250214_gh712_jitter_sim= Simulation of peak jitter algorithms.
+*Description:* =20250214_gh712_jitter_sim= Simulation of peak jitter algorithms.
+
+*Issue:* [[https://github.com/roc-streaming/roc-toolkit/issues/712][roc-streaming/roc-toolkit#712]]
 
 *Date:*
 
@@ -45,6 +49,39 @@ Sat 15 Feb 2025
 
 [[file:README.ipynb][=README.ipynb=]]
 
+* SECTION Test bench                                                :noipynb:
+  :PROPERTIES:
+  :CUSTOM_ID: test-bench
+  :END:
+
+This test is offline, it uses data from previous benchmarks and does no real-time measurements.
+
+In this test, we use:
+
+- csv dumps from [[file:../20250210_gh712_peak_jitter][=20250210_gh712_peak_jitter=]] benchmark (excluding =low_res= tests)
+- python port of current c++ JitterMeter algorithm
+- python prototypes of new JitterMeter algorithms
+
+Python JitterMeter and its dependencies (MovAvgStd, MovMinMax, etc.) are located in [[file:sim][sim]] sub-directory. It is a snapshot of =/sim= directory in the repository root (which may change in future).
+
+The test runs python jitter meters on recorded jitter from dumps (=rec_jitter=) and compares recorded peak-jitter from dumps (=rec_peak_jitter=) with python-calculated peak-jitter (=sim_peak_jitter=).
+
+The goal is to check that:
+
+1. Python port of original jitter meter produces the same results as recorded peak-jitter (i.e. that our simulation test bench works correctly).
+
+   On plots, we want to see that =rec_peak_jitter= (orange line) and =sim_peak_jitter= (dotted line) match each other.
+
+2. Python prototype of new jitter meter algorithm has no regressions on test data, compared to the original.
+
+Once we develop a prototype that works well on test data, we can port it back to C++ and test in real-time.
+
+Jitter meter implementations:
+
+| Python class   | Description                          |
+|----------------+--------------------------------------|
+| =JitterMeterA= | Port of original algorithm from C++. |
+
 * SECTION Library code
   :PROPERTIES:
   :CUSTOM_ID: library-code
@@ -52,7 +89,16 @@ Sat 15 Feb 2025
 
 [[file:library.py][=library.py=]]
 
+#+begin_export markdown
+<details>
+  <summary>Click to expand</summary>
+#+end_export
+
 #+transclude: [[file:./library.py]]  :src jupyter-python :rest ":results none"
+
+#+begin_export markdown
+</details>
+#+end_export
 
 * SECTION Simulation code
   :PROPERTIES:
@@ -73,6 +119,8 @@ Sat 15 Feb 2025
 
 ** PyTest
 
+This command runs doctests from the python classes in =sim= directory:
+
 #+begin_src shell :results verbatim :exports both
   pytest -v --no-header --doctest-modules sim
 #+end_src
@@ -86,7 +134,7 @@ Sat 15 Feb 2025
 : sim/mov_stats.py::sim.mov_stats.MovMinMax PASSED                         [ 75%]
 : sim/mov_stats.py::sim.mov_stats.MovQuantile PASSED                       [100%]
 : 
-: ============================== 4 passed in 0.74s ===============================
+: ============================== 4 passed in 0.69s ===============================
 
 * SECTION Case 01: =5ghz--no-load=
   :PROPERTIES:
@@ -139,7 +187,7 @@ Sat 15 Feb 2025
 #+begin_src jupyter-python :exports both
   plt.plot(rep2.timestamp/60, rep2.rec_jitter/1e6, 'C4')
   plt.plot(rep2.timestamp/60, rep2.rec_peak_jitter/1e6, 'C5')
-  plt.plot(rep2.timestamp/60, rep2.sim_peak_jitter/1e6, 'C8', 
+  plt.plot(rep2.timestamp/60, rep2.sim_peak_jitter/1e6, 'C8',
            linewidth=3, linestyle=(0, (3, 3)))
   plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
              labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -170,7 +218,7 @@ Sat 15 Feb 2025
 #+begin_src jupyter-python :exports both
   plt.plot(rep3.timestamp/60, rep3.rec_jitter/1e6, 'C4')
   plt.plot(rep3.timestamp/60, rep3.rec_peak_jitter/1e6, 'C5')
-  plt.plot(rep3.timestamp/60, rep3.sim_peak_jitter/1e6, 'C8', 
+  plt.plot(rep3.timestamp/60, rep3.sim_peak_jitter/1e6, 'C8',
            linewidth=3, linestyle=(0, (3, 3)))
   plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
              labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -201,7 +249,7 @@ Sat 15 Feb 2025
 #+begin_src jupyter-python :exports both
   plt.plot(rep4.timestamp/60, rep4.rec_jitter/1e6, 'C4')
   plt.plot(rep4.timestamp/60, rep4.rec_peak_jitter/1e6, 'C5')
-  plt.plot(rep4.timestamp/60, rep4.sim_peak_jitter/1e6, 'C8', 
+  plt.plot(rep4.timestamp/60, rep4.sim_peak_jitter/1e6, 'C8',
            linewidth=3, linestyle=(0, (3, 3)))
   plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
              labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
@@ -211,3 +259,34 @@ Sat 15 Feb 2025
 #+attr_html: :width 700
 #+results:
 [[file:./.ob-jupyter/0e694d7b203afb10cba4991d5639af0a1645f062.png]]
+
+* SECTION Case 07: =ether--spikes=
+  :PROPERTIES:
+  :CUSTOM_ID: case-07-ether--spikes
+  :END:
+
+#+begin_src jupyter-python :results none :async yes
+  data = load_report('07--ether--spikes')
+
+  rep = addict.Dict()
+  rep.timestamp = data['m'][:,0]
+  rep.rec_jitter = data['m'][:,2]
+  rep.rec_peak_jitter = data['m'][:,3]
+  rep.sim_peak_jitter = sim_jitter_meter(JitterMeterA, rep.rec_jitter)
+
+  rep7 = rep
+#+end_src
+
+#+begin_src jupyter-python :exports both
+  plt.plot(rep7.timestamp/60, rep7.rec_jitter/1e6, 'C4')
+  plt.plot(rep7.timestamp/60, rep7.rec_peak_jitter/1e6, 'C5')
+  plt.plot(rep7.timestamp/60, rep7.sim_peak_jitter/1e6, 'C8',
+           linewidth=3, linestyle=(0, (3, 3)))
+  plt.legend(['rec_jitter, ms', 'rec_peak_jitter, ms', 'sim_peak_jitter, ms'],
+             labelcolor='linecolor', bbox_to_anchor=(1, -0.1))
+  configure_plot()
+#+end_src
+
+#+attr_html: :width 700
+#+results:
+[[file:./.ob-jupyter/fb76244e112ffe55c4b1e7225b071f1960562eb2.png]]
